@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gincana IPP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e8f5e9;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #2e7d32;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    nav button {
+      background-color: #66bb6a;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    nav button:hover {
+      background-color: #4caf50;
+    }
+
+    #temporizador {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #c8e6c9;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    #timer-display {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    #times, #grade-perguntas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 20px;
+    }
+
+    .time, .pergunta {
+      background-color: #a5d6a7;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <button id="btn-placar">Placar</button>
+    <button id="btn-perguntas">Perguntas</button>
+  </nav>
+
+  <section id="pagina-placar">
+    <div id="temporizador">
+      <div id="timer-display">01:00</div>
+      <button id="btn-iniciar">Iniciar</button>
+      <button id="btn-reiniciar">Reiniciar</button>
+    </div>
+
+    <h2>Placar</h2>
+    <div id="times"></div>
+    <button id="btn-adicionar-time">Adicionar Time</button>
+  </section>
+
+  <section id="pagina-perguntas" style="display: none;">
+    <h2>Perguntas</h2>
+    <div id="grade-perguntas"></div>
+    <button id="btn-adicionar-pergunta">Adicionar Pergunta</button>
+  </section>
+
+  <script>
+    const btnPlacar = document.getElementById('btn-placar');
+    const btnPerguntas = document.getElementById('btn-perguntas');
+    const paginaPlacar = document.getElementById('pagina-placar');
+    const paginaPerguntas = document.getElementById('pagina-perguntas');
+
+    btnPlacar.addEventListener('click', () => {
+      paginaPlacar.style.display = 'block';
+      paginaPerguntas.style.display = 'none';
+    });
+
+    btnPerguntas.addEventListener('click', () => {
+      paginaPlacar.style.display = 'none';
+      paginaPerguntas.style.display = 'block';
+    });
+
+    let timer;
+    let tempoRestante = 60;
+
+    const timerDisplay = document.getElementById('timer-display');
+    const btnIniciar = document.getElementById('btn-iniciar');
+    const btnReiniciar = document.getElementById('btn-reiniciar');
+
+    btnIniciar.addEventListener('click', () => {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (tempoRestante > 0) {
+          tempoRestante--;
+          atualizarTimer();
+        } else {
+          clearInterval(timer);
+        }
+      }, 1000);
+    });
+
+    btnReiniciar.addEventListener('click', () => {
+      clearInterval(timer);
+      tempoRestante = 60;
+      atualizarTimer();
+    });
+
+    function atualizarTimer() {
+      const minutos = String(Math.floor(tempoRestante / 60)).padStart(2, '0');
+      const segundos = String(tempoRestante % 60).padStart(2, '0');
+      timerDisplay.textContent = `${minutos}:${segundos}`;
+    }
+
+    const btnAdicionarTime = document.getElementById('btn-adicionar-time');
+    const timesContainer = document.getElementById('times');
+
+    btnAdicionarTime.addEventListener('click', () => {
+      const time = document.createElement('div');
+      time.className = 'time';
+      time.innerHTML = `
+        <input type="text" placeholder="Nome do time">
+        <div>Pontos: <span>0</span></div>
+        <button onclick="alterarPontos(this, 1)">+1</button>
+        <button onclick="alterarPontos(this, -1)">-1</button>
+      `;
+      timesContainer.appendChild(time);
+    });
+
+    function alterarPontos(button, valor) {
+      const pontos = button.parentElement.querySelector('span');
+      pontos.textContent = Math.max(0, parseInt(pontos.textContent) + valor);
+    }
+
+    const btnAdicionarPergunta = document.getElementById('btn-adicionar-pergunta');
+    const gradePerguntas = document.getElementById('grade-perguntas');
+
+    btnAdicionarPergunta.addEventListener('click', () => {
+      const pergunta = document.createElement('div');
+      pergunta.className = 'pergunta';
+      pergunta.textContent = `Pergunta ${gradePerguntas.children.length + 1}`;
+      pergunta.addEventListener('click', () => pergunta.style.display = 'none');
+      gradePerguntas.appendChild(pergunta);
+    });
+  </script>
+</body>
+</html>
